@@ -5,28 +5,28 @@ using System.Net;
 using System.Text;
 using System.Threading;
 
-namespace NetduinoPlusWebServer
+namespace MicroFrameworkWebServer.WebServer
 {
     public delegate void RequestReceivedDelegate(Request request);
 
     public class Listener : IDisposable
     {
-        const int maxRequestSize = 1024;
-        readonly int portNumber = 80;
+        const int MaxRequestSize = 1024;
+        readonly int _portNumber = 80;
 
-        private Socket listeningSocket = null;
-        private RequestReceivedDelegate requestReceived;
+        private readonly Socket _listeningSocket;
+        private readonly RequestReceivedDelegate _requestReceived;
 
-        public Listener(RequestReceivedDelegate RequestReceived)
-            : this(RequestReceived, 80) { }
+        public Listener(RequestReceivedDelegate requestReceived)
+            : this(requestReceived, 80) { }
 
-        public Listener(RequestReceivedDelegate RequestReceived, int PortNumber)
+        public Listener(RequestReceivedDelegate requestReceived, int portNumber)
         {
-            portNumber = PortNumber;
-            requestReceived = RequestReceived;
-            listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            listeningSocket.Bind(new IPEndPoint(IPAddress.Any, portNumber));
-            listeningSocket.Listen(10);
+            _portNumber = portNumber;
+            _requestReceived = requestReceived;
+            _listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _listeningSocket.Bind(new IPEndPoint(IPAddress.Any, _portNumber));
+            _listeningSocket.Listen(10);
 
             new Thread(StartListening).Start();
 
@@ -42,25 +42,23 @@ namespace NetduinoPlusWebServer
 
             while (true)
             {
-                using (Socket clientSocket = listeningSocket.Accept())
+                using (Socket clientSocket = _listeningSocket.Accept())
                 {
                     IPEndPoint clientIP = clientSocket.RemoteEndPoint as IPEndPoint;
-                    Debug.Print("Received request from " + clientIP.ToString());
-                    var x = clientSocket.RemoteEndPoint;
+                    Debug.Print("Received request from " + clientIP);
 
                     int availableBytes = clientSocket.Available;
-                    Debug.Print(DateTime.Now.ToString() + " " + availableBytes.ToString() + " request bytes available");
+                    Debug.Print(DateTime.Now + " " + availableBytes + " request bytes available");
 
-                    int bytesReceived = (availableBytes > maxRequestSize ? maxRequestSize : availableBytes);
+                    int bytesReceived = (availableBytes > MaxRequestSize ? MaxRequestSize : availableBytes);
                     if (bytesReceived > 0)
                     {
                         byte[] buffer = new byte[bytesReceived]; // Buffer probably should be larger than this.
-                        int readByteCount = clientSocket.Receive(buffer, bytesReceived, SocketFlags.None);
-
+                        
                         using (Request r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
                         {
-                            Debug.Print(DateTime.Now.ToString() + " " + r.URL);
-                            if (requestReceived != null) requestReceived(r);
+                            Debug.Print(DateTime.Now + " " + r.URL);
+                            if (_requestReceived != null) _requestReceived(r);
 
                         }
 
@@ -79,7 +77,7 @@ namespace NetduinoPlusWebServer
 
         public void Dispose()
         {
-            if (listeningSocket != null) listeningSocket.Close();
+            if (_listeningSocket != null) _listeningSocket.Close();
 
         }
 

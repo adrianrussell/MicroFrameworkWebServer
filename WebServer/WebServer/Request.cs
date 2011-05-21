@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 
-namespace NetduinoPlusWebServer
+namespace MicroFrameworkWebServer.WebServer
 {
     /// <summary>
     /// Holds information about a web request
@@ -15,16 +15,16 @@ namespace NetduinoPlusWebServer
     /// </remarks>
     public class Request : IDisposable
     {
-        private string method;
-        private string url;
-        private Socket client;
+        private string _method;
+        private string _url;
+        private Socket _client;
 
-        const int fileBufferSize = 256;
+        const int FileBufferSize = 256;
 
-        internal Request(Socket Client, char[] Data)
+        internal Request(Socket client, char[] data)
         {
-            client = Client;
-            ProcessRequest(Data);
+            _client = client;
+            ProcessRequest(data);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace NetduinoPlusWebServer
         /// </summary>
         public string Method
         {
-            get { return method; }
+            get { return _method; }
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace NetduinoPlusWebServer
         /// </summary>
         public string URL
         {
-            get { return url; }
+            get { return _url; }
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace NetduinoPlusWebServer
         {
             get
             {
-                IPEndPoint ip = client.RemoteEndPoint as IPEndPoint;
+                IPEndPoint ip = _client.RemoteEndPoint as IPEndPoint;
                 if (ip != null) return ip.Address;
                 return null;
             }
@@ -60,16 +60,17 @@ namespace NetduinoPlusWebServer
         /// Send a response back to the client
         /// </summary>
         /// <param name="response"></param>
+        /// <param name="type"></param>
         public void SendResponse(string response, string type = "text/html")
         {
-            if (client != null)
+            if (_client != null)
             {
-                string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + response.Length.ToString() + "\r\nConnection: close\r\n\r\n";
+                string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + response.Length + "\r\nConnection: close\r\n\r\n";
 
-                client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
-                client.Send(Encoding.UTF8.GetBytes(response), response.Length, SocketFlags.None);
+                _client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+                _client.Send(Encoding.UTF8.GetBytes(response), response.Length, SocketFlags.None);
 
-                Debug.Print("Response of " + response.Length.ToString() + " sent.");
+                Debug.Print("Response of " + response.Length + " sent.");
             }
 
         }
@@ -110,10 +111,10 @@ namespace NetduinoPlusWebServer
             using (FileStream inputStream = new FileStream(filePath, FileMode.Open))
             {
                 // Send the header
-                string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + inputStream.Length.ToString() + "\r\nConnection: close\r\n\r\n";
-                client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+                string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + inputStream.Length + "\r\nConnection: close\r\n\r\n";
+                _client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
 
-                byte[] readBuffer = new byte[fileBufferSize];
+                byte[] readBuffer = new byte[FileBufferSize];
                 while (true)
                 {
                     // Send the file a few bytes at a time
@@ -121,8 +122,8 @@ namespace NetduinoPlusWebServer
                     if (bytesRead == 0)
                         break;
 
-                    client.Send(readBuffer, bytesRead, SocketFlags.None);
-                    Debug.Print("Sending " + readBuffer.Length.ToString() + "bytes...");
+                    _client.Send(readBuffer, bytesRead, SocketFlags.None);
+                    Debug.Print("Sending " + readBuffer.Length + "bytes...");
                 }
             }
 
@@ -135,8 +136,8 @@ namespace NetduinoPlusWebServer
         public void Send404()
         {
             string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
-            if (client != null)
-                client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+            if (_client != null)
+                _client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
             Debug.Print("Sent 404 Not Found");
         }
         /// <summary>
@@ -150,8 +151,8 @@ namespace NetduinoPlusWebServer
 
             // Parse the first line of the request: "GET /path/ HTTP/1.1"
             string[] words = firstLine.Split(' ');
-            method = words[0];
-            url = words[1];
+            _method = words[0];
+            _url = words[1];
 
             // Could look for any further headers in other lines of the request if required (e.g. User-Agent, Cookie)
         }
@@ -161,10 +162,10 @@ namespace NetduinoPlusWebServer
 
         public void Dispose()
         {
-            if (client != null)
+            if (_client != null)
             {
-                client.Close();
-                client = null;
+                _client.Close();
+                _client = null;
             }
         }
 

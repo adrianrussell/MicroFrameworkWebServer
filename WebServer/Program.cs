@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading;
-using Microsoft.SPOT;
+﻿using System.Threading;
+using MicroFrameworkWebServer.WebServer;
 using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware;
+using NetduinoPlusWebServer;
 using SecretLabs.NETMF.Hardware.Netduino;
 using System.IO;
 
-namespace NetduinoPlusWebServer
+namespace MicroFrameworkWebServer
 {
     public class Program
     {
