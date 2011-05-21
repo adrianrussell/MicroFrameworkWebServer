@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Server;
 
 namespace MicroFrameworkWebServer.WebServer
 {
@@ -42,7 +43,7 @@ namespace MicroFrameworkWebServer.WebServer
 
             while (true)
             {
-                using (Socket clientSocket = _listeningSocket.Accept())
+                using (IClientSocket clientSocket = new ClientSocket(_listeningSocket.Accept()))
                 {
                     IPEndPoint clientIP = clientSocket.RemoteEndPoint as IPEndPoint;
                     Debug.Print("Received request from " + clientIP);

@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Net;
 using System.IO;
+using Server;
 
 namespace MicroFrameworkWebServer.WebServer
 {
@@ -17,11 +18,11 @@ namespace MicroFrameworkWebServer.WebServer
     {
         private string _method;
         private string _url;
-        private Socket _client;
+        private IClientSocket _client;
 
         const int FileBufferSize = 256;
 
-        internal Request(Socket client, char[] data)
+        internal Request(IClientSocket client, char[] data)
         {
             _client = client;
             ProcessRequest(data);
@@ -67,8 +68,8 @@ namespace MicroFrameworkWebServer.WebServer
             {
                 string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + response.Length + "\r\nConnection: close\r\n\r\n";
 
-                _client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
-                _client.Send(Encoding.UTF8.GetBytes(response), response.Length, SocketFlags.None);
+                _client.Send(header);
+                _client.Send(response);
 
                 Debug.Print("Response of " + response.Length + " sent.");
             }
@@ -112,7 +113,7 @@ namespace MicroFrameworkWebServer.WebServer
             {
                 // Send the header
                 string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + inputStream.Length + "\r\nConnection: close\r\n\r\n";
-                _client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+                _client.Send(header);
 
                 byte[] readBuffer = new byte[FileBufferSize];
                 while (true)
@@ -122,7 +123,7 @@ namespace MicroFrameworkWebServer.WebServer
                     if (bytesRead == 0)
                         break;
 
-                    _client.Send(readBuffer, bytesRead, SocketFlags.None);
+                    _client.Send(readBuffer, bytesRead);
                     Debug.Print("Sending " + readBuffer.Length + "bytes...");
                 }
             }
@@ -135,9 +136,9 @@ namespace MicroFrameworkWebServer.WebServer
         /// </summary>
         public void Send404()
         {
-            string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+            const string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
             if (_client != null)
-                _client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+                _client.Send(header);
             Debug.Print("Sent 404 Not Found");
         }
         /// <summary>
