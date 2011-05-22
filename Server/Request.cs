@@ -1,4 +1,4 @@
-#region Copyright and file header
+﻿#region Copyright and file header
 
 // Copyright 2010 Adrian Russell - All Rights Reserved.
 
@@ -7,10 +7,9 @@
 using System;
 using System.IO;
 using System.Net;
-using Microsoft.SPOT;
-using Server;
+using Server.Network;
 
-namespace MicroFrameworkWebServer.WebServer
+namespace Server
 {
     /// <summary>
     /// Holds information about a web request
@@ -25,10 +24,12 @@ namespace MicroFrameworkWebServer.WebServer
         private IFileStreamFactory _fileStreamFactory;
         private string _method;
         private string _url;
+        private char[] _data;
 
-        internal Request(IClientSocket client, char[] data) {
+        public Request(IClientSocket client, char[] data) {
+            _data = data;
             _client = client;
-            ProcessRequest(data);
+         
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace MicroFrameworkWebServer.WebServer
                 _client.Send(header);
                 _client.Send(response);
 
-                Debug.Print("Response of " + response.Length + " sent.");
+              
             }
         }
 
@@ -140,11 +141,11 @@ namespace MicroFrameworkWebServer.WebServer
                         break;
 
                     _client.Send(readBuffer, bytesRead);
-                    Debug.Print("Sending " + readBuffer.Length + "bytes...");
+                 
                 }
             }
 
-            Debug.Print("Sent file " + filePath);
+         
         }
 
         /// <summary>
@@ -154,7 +155,11 @@ namespace MicroFrameworkWebServer.WebServer
             const string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
             if (_client != null)
                 _client.Send(header);
-            Debug.Print("Sent 404 Not Found");
+         
+        }
+
+        public void ProcessRequest() {
+            ProcessRequest(_data);
         }
 
         /// <summary>

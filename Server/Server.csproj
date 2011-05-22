@@ -30,13 +30,14 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
-    <Compile Include="ClientSocket.cs" />
+    <Compile Include="Network\ClientSocket.cs" />
     <Compile Include="FileStreamFactory.cs" />
-    <Compile Include="IClientSocket.cs" />
+    <Compile Include="Network\IClientSocket.cs" />
     <Compile Include="IFileStreamFactory.cs" />
-    <Compile Include="IListeningSocket.cs" />
-    <Compile Include="ListeningSocket.cs" />
+    <Compile Include="Network\IListeningSocket.cs" />
+    <Compile Include="Network\ListeningSocket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Request.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SPOT.Native">

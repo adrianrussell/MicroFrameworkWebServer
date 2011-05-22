@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Network
 {
     public interface IListeningSocket : IDisposable
     {

@@ -40,8 +40,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Server\FileStreamFactory.cs">
+      <Link>FileStreamFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Server\IFileStreamFactory.cs">
+      <Link>IFileStreamFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Server\Network\ClientSocket.cs">
+      <Link>Network\ClientSocket.cs</Link>
+    </Compile>
+    <Compile Include="..\Server\Network\IClientSocket.cs">
+      <Link>Network\IClientSocket.cs</Link>
+    </Compile>
+    <Compile Include="..\Server\Network\IListeningSocket.cs">
+      <Link>Network\IListeningSocket.cs</Link>
+    </Compile>
+    <Compile Include="..\Server\Network\ListeningSocket.cs">
+      <Link>Network\ListeningSocket.cs</Link>
+    </Compile>
+    <Compile Include="..\Server\Request.cs">
+      <Link>Request.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

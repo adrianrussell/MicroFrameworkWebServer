@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using Server;
+using Server.Network;
 
 namespace MicroFrameworkWebServer.WebServer
 {
@@ -56,8 +57,9 @@ namespace MicroFrameworkWebServer.WebServer
                     {
                         byte[] buffer = new byte[bytesReceived]; // Buffer probably should be larger than this.
                         
-                        using (Request r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
+                        using (var r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
                         {
+                            r.ProcessRequest();
                             Debug.Print(DateTime.Now + " " + r.URL);
                             if (_requestReceived != null) _requestReceived(r);
 

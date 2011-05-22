@@ -4,6 +4,7 @@ using Microsoft.SPOT.Hardware;
 using NetduinoPlusWebServer;
 using SecretLabs.NETMF.Hardware.Netduino;
 using System.IO;
+using Server;
 
 namespace MicroFrameworkWebServer
 {
