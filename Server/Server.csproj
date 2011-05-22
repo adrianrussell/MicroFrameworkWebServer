@@ -32,6 +32,8 @@
   <ItemGroup>
     <Compile Include="ClientSocket.cs" />
     <Compile Include="IClientSocket.cs" />
+    <Compile Include="IListeningSocket.cs" />
+    <Compile Include="ListeningSocket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Class1.cs" />
   </ItemGroup>

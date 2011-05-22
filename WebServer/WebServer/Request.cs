@@ -1,7 +1,5 @@
 using System;
 using Microsoft.SPOT;
-using System.Net.Sockets;
-using System.Text;
 using System.Net;
 using System.IO;
 using Server;
@@ -51,7 +49,7 @@ namespace MicroFrameworkWebServer.WebServer
         {
             get
             {
-                IPEndPoint ip = _client.RemoteEndPoint as IPEndPoint;
+                IPEndPoint ip = _client.RemoteEndPoint;
                 if (ip != null) return ip.Address;
                 return null;
             }

@@ -15,7 +15,7 @@ namespace MicroFrameworkWebServer.WebServer
         const int MaxRequestSize = 1024;
         readonly int _portNumber = 80;
 
-        private readonly Socket _listeningSocket;
+        private IListeningSocket _listeningSocket;
         private readonly RequestReceivedDelegate _requestReceived;
 
         public Listener(RequestReceivedDelegate requestReceived)
@@ -25,9 +25,6 @@ namespace MicroFrameworkWebServer.WebServer
         {
             _portNumber = portNumber;
             _requestReceived = requestReceived;
-            _listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _listeningSocket.Bind(new IPEndPoint(IPAddress.Any, _portNumber));
-            _listeningSocket.Listen(10);
 
             new Thread(StartListening).Start();
 
@@ -38,14 +35,18 @@ namespace MicroFrameworkWebServer.WebServer
             Dispose();
         }
 
+        public IListeningSocket ListeningSocket {
+            get { return _listeningSocket ?? (_listeningSocket = new ListeningSocket(_portNumber)); }
+        }
+
         public void StartListening()
         {
 
             while (true)
             {
-                using (IClientSocket clientSocket = new ClientSocket(_listeningSocket.Accept()))
+                using (IClientSocket clientSocket = new ClientSocket(ListeningSocket.Accept()))
                 {
-                    IPEndPoint clientIP = clientSocket.RemoteEndPoint as IPEndPoint;
+                    IPEndPoint clientIP = clientSocket.RemoteEndPoint;
                     Debug.Print("Received request from " + clientIP);
 
                     int availableBytes = clientSocket.Available;
@@ -78,7 +79,7 @@ namespace MicroFrameworkWebServer.WebServer
 
         public void Dispose()
         {
-            if (_listeningSocket != null) _listeningSocket.Close();
+            if (ListeningSocket != null) ListeningSocket.Dispose();
 
         }
 
