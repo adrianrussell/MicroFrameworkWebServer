@@ -1,13 +1,10 @@
-﻿#region Copyright and file header
-
-// Copyright 2010 Adrian Russell - All Rights Reserved.
-
-#endregion
-
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using Server.Network;
+#if MF_FRAMEWORK_VERSION_V4_1
+using Microsoft.SPOT;
+#endif
 
 namespace Server
 {
@@ -20,16 +17,15 @@ namespace Server
     public class Request : IDisposable
     {
         private const int FileBufferSize = 256;
+        private readonly char[] _data;
         private IClientSocket _client;
         private IFileStreamFactory _fileStreamFactory;
         private string _method;
         private string _url;
-        private char[] _data;
 
         public Request(IClientSocket client, char[] data) {
             _data = data;
             _client = client;
-         
         }
 
         /// <summary>
@@ -58,12 +54,7 @@ namespace Server
         }
 
         public IFileStreamFactory FileStreamFactory {
-            get {
-                if (_fileStreamFactory == null)
-                    _fileStreamFactory = new FileStreamFactory();
-
-                return _fileStreamFactory;
-            }
+            get { return _fileStreamFactory ?? (_fileStreamFactory = new FileStreamFactory()); }
         }
 
         #region IDisposable Members
@@ -87,10 +78,12 @@ namespace Server
                 string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + response.Length +
                                 "\r\nConnection: close\r\n\r\n";
 
+                #if MF_FRAMEWORK_VERSION_V4_1
+                Debug.Print("header");
+                #endif
+    
                 _client.Send(header);
                 _client.Send(response);
-
-              
             }
         }
 
@@ -125,27 +118,31 @@ namespace Server
                 }
 
 
-            using (Stream inputStream = FileStreamFactory.Create(filePath))
-            {
+            using (Stream inputStream = FileStreamFactory.Create(filePath)) {
                 // Send the header
-                string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + inputStream.Length +
-                                "\r\nConnection: close\r\n\r\n";
+                SendHeader(type, inputStream);
 
-                _client.Send(header);
-
-                var readBuffer = new byte[FileBufferSize];
-                while (true) {
-                    // Send the file a few bytes at a time
-                    int bytesRead = inputStream.Read(readBuffer, 0, readBuffer.Length);
-                    if (bytesRead == 0)
-                        break;
-
-                    _client.Send(readBuffer, bytesRead);
-                 
-                }
+                SendResponseFromFile(inputStream);
             }
+        }
 
-         
+        private void SendHeader(string type, Stream inputStream) {
+            string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + inputStream.Length +
+                            "\r\nConnection: close\r\n\r\n";
+
+            _client.Send(header);
+        }
+
+        private void SendResponseFromFile(Stream inputStream) {
+            var readBuffer = new byte[FileBufferSize];
+            while (true) {
+                // Send the file a few bytes at a time
+                int bytesRead = inputStream.Read(readBuffer, 0, readBuffer.Length);
+                if (bytesRead == 0)
+                    break;
+
+                _client.Send(readBuffer, bytesRead);
+            }
         }
 
         /// <summary>
@@ -155,7 +152,6 @@ namespace Server
             const string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
             if (_client != null)
                 _client.Send(header);
-         
         }
 
         public void ProcessRequest() {
