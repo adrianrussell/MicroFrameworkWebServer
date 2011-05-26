@@ -22,7 +22,7 @@ namespace MicroFrameworkWebServer
             {
                 // Blink LED to show we're still responsive
                 led.Write(!led.Read());
-                Thread.Sleep(500);
+                Thread.Sleep(2000);
             }
 
         }

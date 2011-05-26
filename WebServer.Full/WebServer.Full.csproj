@@ -40,25 +40,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Server\FileStreamFactory.cs">
+    <Compile Include="..\WebServer\FileStreamFactory.cs">
       <Link>FileStreamFactory.cs</Link>
     </Compile>
-    <Compile Include="..\Server\IFileStreamFactory.cs">
+    <Compile Include="..\WebServer\IFileStreamFactory.cs">
       <Link>IFileStreamFactory.cs</Link>
     </Compile>
-    <Compile Include="..\Server\Network\ClientSocket.cs">
+    <Compile Include="..\WebServer\Network\ClientSocket.cs">
       <Link>Network\ClientSocket.cs</Link>
     </Compile>
-    <Compile Include="..\Server\Network\IClientSocket.cs">
+    <Compile Include="..\WebServer\Network\IClientSocket.cs">
       <Link>Network\IClientSocket.cs</Link>
     </Compile>
-    <Compile Include="..\Server\Network\IListeningSocket.cs">
+    <Compile Include="..\WebServer\Network\IListeningSocket.cs">
       <Link>Network\IListeningSocket.cs</Link>
     </Compile>
-    <Compile Include="..\Server\Network\ListeningSocket.cs">
+    <Compile Include="..\WebServer\Network\ListeningSocket.cs">
       <Link>Network\ListeningSocket.cs</Link>
     </Compile>
-    <Compile Include="..\Server\Request.cs">
+    <Compile Include="..\WebServer\Request.cs">
       <Link>Request.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

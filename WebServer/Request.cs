@@ -20,8 +20,6 @@ namespace Server
         private readonly char[] _data;
         private IClientSocket _client;
         private IFileStreamFactory _fileStreamFactory;
-        private string _method;
-        private string _url;
 
         public Request(IClientSocket client, char[] data) {
             _data = data;
@@ -31,16 +29,12 @@ namespace Server
         /// <summary>
         /// Request method
         /// </summary>
-        public string Method {
-            get { return _method; }
-        }
+        public string Method { get; private set; }
 
         /// <summary>
         /// URL of request
         /// </summary>
-        public string URL {
-            get { return _url; }
-        }
+        public string URL { get; private set; }
 
         /// <summary>
         /// Client IP address
@@ -95,27 +89,9 @@ namespace Server
         /// </remarks>
         /// <param name="filePath"></param>
         public void SendFile(string filePath) {
-            // Map the file extension to a mime type
             string type = "";
-            int dot = filePath.LastIndexOf('.');
-            if (dot != 0)
-                switch (filePath.Substring(dot + 1)) {
-                    case "css":
-                        type = "text/css";
-                        break;
-                    case "xml":
-                    case "xsl":
-                        type = "text/xml";
-                        break;
-                    case "jpg":
-                    case "jpeg":
-                        type = "image/jpeg";
-                        break;
-                    case "gif":
-                        type = "image/gif";
-                        break;
-                        // Not exhaustive. Extend this list as required.
-                }
+            if (DoesFileNameHaveExtentsion(filePath))
+                type = MapMIMEType(filePath, type);
 
 
             using (Stream inputStream = FileStreamFactory.Create(filePath)) {
@@ -124,6 +100,35 @@ namespace Server
 
                 SendResponseFromFile(inputStream);
             }
+        }
+
+        private static string MapMIMEType(string filePath, string type) {
+            switch (GetFileExtentsion(filePath)) {
+                case "css":
+                    type = "text/css";
+                    break;
+                case "xml":
+                case "xsl":
+                    type = "text/xml";
+                    break;
+                case "jpg":
+                case "jpeg":
+                    type = "image/jpeg";
+                    break;
+                case "gif":
+                    type = "image/gif";
+                    break;
+                    // Not exhaustive. Extend this list as required.
+            }
+            return type;
+        }
+
+        private static string GetFileExtentsion(string filePath) {
+            return filePath.Substring(filePath.LastIndexOf('.') + 1);
+        }
+
+        private static bool DoesFileNameHaveExtentsion(string filePath) {
+            return filePath.LastIndexOf('.') != 0;
         }
 
         private void SendHeader(string type, Stream inputStream) {
@@ -154,22 +159,18 @@ namespace Server
                 _client.Send(header);
         }
 
-        public void ProcessRequest() {
-            ProcessRequest(_data);
+        public void ProcessRequestHeader() {
+            ProcessRequestHeader(_data);
         }
 
-        /// <summary>
-        /// Process the request header
-        /// </summary>
-        /// <param name="data"></param>
-        private void ProcessRequest(char[] data) {
+        private void ProcessRequestHeader(char[] data) {
             var content = new string(data);
             var firstLine = content.Substring(0, content.IndexOf('\n'));
 
             // Parse the first line of the request: "GET /path/ HTTP/1.1"
             var words = firstLine.Split(' ');
-            _method = words[0];
-            _url = words[1];
+            Method = words[0];
+            URL = words[1];
 
             // Could look for any further headers in other lines of the request if required (e.g. User-Agent, Cookie)
         }

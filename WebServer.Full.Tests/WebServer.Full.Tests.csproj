@@ -59,7 +59,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Server.Full\Server.Full.csproj">
+    <ProjectReference Include="..\WebServer.Full\WebServer.Full.csproj">
       <Project>{394A635F-8C21-4F8B-BC25-E9BCD0D29A6F}</Project>
       <Name>Server.Full</Name>
     </ProjectReference>

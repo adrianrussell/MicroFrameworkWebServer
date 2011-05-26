@@ -59,7 +59,7 @@ namespace MicroFrameworkWebServer.WebServer
                         
                         using (var r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
                         {
-                            r.ProcessRequest();
+                            r.ProcessRequestHeader();
                             Debug.Print(DateTime.Now + " " + r.URL);
                             if (_requestReceived != null) _requestReceived(r);
 
