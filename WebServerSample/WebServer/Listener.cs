@@ -1,5 +1,7 @@
 using System;
+#if MF_FRAMEWORK_VERSION_V4_1
 using Microsoft.SPOT;
+#endif
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -26,8 +28,11 @@ namespace MicroFrameworkWebServer.WebServer
             _portNumber = portNumber;
             _requestReceived = requestReceived;
 
-            new Thread(StartListening).Start();
 
+        }
+
+        public void Start() {
+            new Thread(StartListening).Start();
         }
 
         ~Listener()
@@ -39,7 +44,7 @@ namespace MicroFrameworkWebServer.WebServer
             get { return _listeningSocket ?? (_listeningSocket = new ListeningSocket(_portNumber)); }
         }
 
-        public void StartListening()
+        private void StartListening()
         {
 
             while (true)
@@ -47,10 +52,10 @@ namespace MicroFrameworkWebServer.WebServer
                 using (IClientSocket clientSocket = new ClientSocket(ListeningSocket.Accept()))
                 {
                     IPEndPoint clientIP = clientSocket.RemoteEndPoint;
-                    Debug.Print("Received request from " + clientIP);
+                    Log.Debug("Received request from " + clientIP);
 
                     int availableBytes = clientSocket.Available;
-                    Debug.Print(DateTime.Now + " " + availableBytes + " request bytes available");
+                    Log.Debug(DateTime.Now + " " + availableBytes + " request bytes available");
 
                     int bytesReceived = (availableBytes > MaxRequestSize ? MaxRequestSize : availableBytes);
                     if (bytesReceived > 0)
@@ -60,7 +65,7 @@ namespace MicroFrameworkWebServer.WebServer
                         using (var r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
                         {
                             r.ProcessRequestHeader();
-                            Debug.Print(DateTime.Now + " " + r.URL);
+                            Log.Debug(DateTime.Now + " " + r.URL);
                             if (_requestReceived != null) _requestReceived(r);
 
                         }

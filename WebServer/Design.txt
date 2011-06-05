@@ -1,0 +1,25 @@
+﻿Server
+WebServer - Entry point for client applications to start and stop server and setup basic configuration.
+
+Listener
+- Creates a thread to listen on.
+- Capture port  information
+- Capture max request size
+
+- Split out threading from listening
+
+Request
+- Extracts information about the request
+- Reads the file from the file systems
+- Sends 404 if url file not found
+- Sends the response
+- Create Request Received Delegate
+
+- Could potentially split into a request and a request processor object?
+
+
+Facades
+ClientSocket - facade to allow dependancies on socket class to be abstracted and interface to Socket class to be simplified
+ListeningSocket - facade to allow dependancies on socket class to be abstracted and interface to Socket class to be simplified
+
+FilesStreamFactory - factory to allow depedancy on file system to be abstracted.

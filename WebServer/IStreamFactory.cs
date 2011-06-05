@@ -2,7 +2,7 @@
 
 namespace Server
 {
-    public interface IFileStreamFactory
+    public interface IStreamFactory
     {
         Stream Create(string filePath);
     }

@@ -43,8 +43,11 @@
     <Compile Include="..\WebServer\FileStreamFactory.cs">
       <Link>FileStreamFactory.cs</Link>
     </Compile>
-    <Compile Include="..\WebServer\IFileStreamFactory.cs">
-      <Link>IFileStreamFactory.cs</Link>
+    <Compile Include="..\WebServer\IStreamFactory.cs">
+      <Link>IStreamFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\WebServer\Log.cs">
+      <Link>Log.cs</Link>
     </Compile>
     <Compile Include="..\WebServer\Network\ClientSocket.cs">
       <Link>Network\ClientSocket.cs</Link>

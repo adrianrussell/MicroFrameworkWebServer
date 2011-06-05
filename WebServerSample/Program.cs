@@ -14,10 +14,11 @@ namespace MicroFrameworkWebServer
 
         public static void Main()
         {
+            using (var listener = new Listener(RequestReceived)) {
+                listener.Start();
+            }
 
-            Listener webServer = new Listener(RequestReceived);
-
-            OutputPort led = new OutputPort(Pins.ONBOARD_LED, false);
+            var led = new OutputPort(Pins.ONBOARD_LED, false);
             while (true)
             {
                 // Blink LED to show we're still responsive

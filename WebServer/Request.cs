@@ -19,7 +19,7 @@ namespace Server
         private const int FileBufferSize = 256;
         private readonly char[] _data;
         private IClientSocket _client;
-        private IFileStreamFactory _fileStreamFactory;
+        private IStreamFactory _fileStreamFactory;
 
         public Request(IClientSocket client, char[] data) {
             _data = data;
@@ -47,7 +47,10 @@ namespace Server
             }
         }
 
-        public IFileStreamFactory FileStreamFactory {
+        /// <summary>
+        /// Setup as property to support dependency injection
+        /// </summary>
+        public IStreamFactory FileStreamFactory {
             get { return _fileStreamFactory ?? (_fileStreamFactory = new FileStreamFactory()); }
         }
 
@@ -72,9 +75,7 @@ namespace Server
                 string header = "HTTP/1.0 200 OK\r\nContent-Type: " + type + "; charset=utf-8\r\nContent-Length: " + response.Length +
                                 "\r\nConnection: close\r\n\r\n";
 
-                #if MF_FRAMEWORK_VERSION_V4_1
-                Debug.Print("header");
-                #endif
+                Log.Debug("header");
     
                 _client.Send(header);
                 _client.Send(response);
