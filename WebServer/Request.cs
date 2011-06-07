@@ -166,7 +166,8 @@ namespace Server
 
         private void ProcessRequestHeader(char[] data) {
             var content = new string(data);
-            var firstLine = content.Substring(0, content.IndexOf('\n'));
+            var indexOf = content.IndexOf('\n');
+            var firstLine = content.Substring(0, indexOf);
 
             // Parse the first line of the request: "GET /path/ HTTP/1.1"
             var words = firstLine.Split(' ');

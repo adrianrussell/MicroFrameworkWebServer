@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using NUnit.Framework;
 using Rhino.Mocks;
 using Server.Network;
@@ -17,12 +18,12 @@ namespace Server.Full.Tests
 
         [Test]
         public void CanCreate() {
-            Request request = GetRequest();
+            Request request = GetRequest(new char[2]);
             Assert.That(request, Is.Not.Null);
         }
 
-        private Request GetRequest() {
-            return new Request(_socket,new char[2]);
+        private Request GetRequest(char[] data) {
+            return new Request(_socket,data);
         }
 
         //[MethodName_StateUnderTest_ExpectedBehavior]
@@ -30,12 +31,32 @@ namespace Server.Full.Tests
         public void Client_ReturnsIPAddress_IPAddressIsValid() {
 
             _socket.Expect(x => x.RemoteEndPoint).Return(new IPEndPoint(new IPAddress(123456), 80));
-            Request request = GetRequest();
+            Request request = GetRequest(new char[2]);
 
             Assert.That(request.Client, Is.Not.Null);
             Assert.That(request.Client, Is.EqualTo(new IPAddress(123456)));
 
             _socket.VerifyAllExpectations();
         }
+
+        [Test]
+        public void ProcessRequest_ValidHeader_SetsMethod() {
+            Request request = GetRequest((@"GET /path/ HTTP / 1.1" + Environment.NewLine).ToCharArray());
+
+            request.ProcessRequestHeader();
+
+            Assert.That(request.Method, Is.EqualTo("GET"));
+        }
+
+        [Test]
+        public void ProcessRequest_ValidHeader_SetsURL()
+        {
+            Request request = GetRequest((@"GET /path/ HTTP / 1.1" + Environment.NewLine).ToCharArray());
+
+            request.ProcessRequestHeader();
+
+            Assert.That(request.URL, Is.EqualTo("/path/"));
+        }
+
     }
 }
