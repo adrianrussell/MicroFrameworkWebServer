@@ -51,6 +51,8 @@ namespace MicroFrameworkWebServer.WebServer
             {
                 using (IClientSocket clientSocket = new ClientSocket(ListeningSocket.Accept()))
                 {
+                   
+
                     IPEndPoint clientIP = clientSocket.RemoteEndPoint;
                     Log.Debug("Received request from " + clientIP);
 
@@ -60,7 +62,8 @@ namespace MicroFrameworkWebServer.WebServer
                     int bytesReceived = (availableBytes > MaxRequestSize ? MaxRequestSize : availableBytes);
                     if (bytesReceived > 0)
                     {
-                        byte[] buffer = new byte[bytesReceived]; // Buffer probably should be larger than this.
+                        byte[] buffer = clientSocket.Receive(bytesReceived); // Buffer probably should be larger than this.
+                       
                         
                         using (var r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
                         {

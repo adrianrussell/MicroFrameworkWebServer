@@ -10,5 +10,6 @@ namespace Server.Network
         void Close();
         IPEndPoint RemoteEndPoint { get; }
         int Available { get; }
+        byte[] Receive(int bytesReceived);
     }
 }

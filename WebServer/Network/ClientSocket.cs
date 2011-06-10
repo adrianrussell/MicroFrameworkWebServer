@@ -23,6 +23,12 @@ namespace Server.Network
             _socket.Send(buffer, size, SocketFlags.None);
         }
 
+        public byte[] Receive(int bytesReceived) {
+            var buffer = new byte[bytesReceived];
+            _socket.Receive(buffer, bytesReceived, SocketFlags.None);
+            return buffer;
+        }
+
         public IPEndPoint RemoteEndPoint { get { return _socket.RemoteEndPoint as IPEndPoint; }
         }
 
