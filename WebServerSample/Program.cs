@@ -1,22 +1,50 @@
 ﻿using System.Threading;
 using MicroFrameworkWebServer.WebServer;
+using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
+using Microsoft.SPOT.Net.NetworkInformation;
 using NetduinoPlusWebServer;
 using SecretLabs.NETMF.Hardware.Netduino;
 using System.IO;
 using Server;
+using Server.Network;
+using System.Net;
 
 namespace MicroFrameworkWebServer
 {
     public class Program
     {
-        const string WebFolder = "\\SD\\Web";
+        const string WebFolder = "\\SD";
 
-        public static void Main()
-        {
-            using (var listener = new Listener(RequestReceived)) {
-                listener.Start();
+        public static void Main() {
+
+
+            //NetworkInterface.GetAllNetworkInterfaces()[0].EnableDhcp();
+            NetworkInterface.GetAllNetworkInterfaces()[0].EnableStaticIP("192.168.0.16","255.255.255.0","192.168.0.1");
+//            NetworkInterface.GetAllNetworkInterfaces()[0].RenewDhcpLease();
+
+  //          var ipAddress = NetworkInterface.GetAllNetworkInterfaces()[0].IPAddress;
+
+            Thread.Sleep(1000);
+
+            Debug.Print("Dirs: ");
+            Debug.Print(Directory.GetCurrentDirectory());
+            Directory.SetCurrentDirectory(@"\SD");
+            string[] dirs = Directory.GetDirectories(@"\SD");
+
+            foreach (string dir in dirs)
+            {
+                Debug.Print(dir);
+                foreach (string file in Directory.GetFiles(dir))
+                {
+                    Debug.Print(file);
+                }
             }
+
+
+            var listener = new Listener(RequestReceived);
+                listener.Start();
+            
 
             var led = new OutputPort(Pins.ONBOARD_LED, false);
             while (true)
@@ -48,7 +76,7 @@ namespace MicroFrameworkWebServer
             // Replace / with \
             string filePath = WebFolder + request.URL.Replace('/', '\\');
 
-            if (File.Exists(filePath))
+            if (File.Exists(@"\SD\default.html"))
                 request.SendFile(filePath);
             else
                 request.Send404();

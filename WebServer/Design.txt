@@ -22,4 +22,4 @@ Facades
 ClientSocket - facade to allow dependancies on socket class to be abstracted and interface to Socket class to be simplified
 ListeningSocket - facade to allow dependancies on socket class to be abstracted and interface to Socket class to be simplified
 
-FilesStreamFactory - factory to allow depedancy on file system to be abstracted.
+FilesStreamFactory - factory to allow depedency on file system to be abstracted.
