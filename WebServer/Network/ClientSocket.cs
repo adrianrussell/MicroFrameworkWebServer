@@ -14,13 +14,13 @@ namespace Server.Network
             _socket = socket;
         }
 
-        public void Send(string buffer) {
-            _socket.Send(_encoding.GetBytes(buffer), buffer.Length, SocketFlags.None);
+        public int Send(string buffer) {
+            return _socket.Send(_encoding.GetBytes(buffer), buffer.Length, SocketFlags.None);
         }
 
-        public void Send(byte[] buffer,int size)
+        public int Send(byte[] buffer, int size)
         {
-            _socket.Send(buffer, size, SocketFlags.None);
+            return _socket.Send(buffer, size, SocketFlags.None);
         }
 
         public byte[] Receive(int bytesReceived) {

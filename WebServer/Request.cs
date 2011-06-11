@@ -158,6 +158,7 @@ namespace Server
             const string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
             if (_client != null)
                 _client.Send(header);
+
         }
 
         public void ProcessRequestHeader() {
