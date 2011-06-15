@@ -144,11 +144,15 @@ namespace Server
             while (true) {
                 // Send the file a few bytes at a time
                 int bytesRead = inputStream.Read(readBuffer, 0, readBuffer.Length);
-                if (bytesRead == 0)
+                if (NoBytesToRead(bytesRead))
                     break;
 
                 _client.Send(readBuffer, bytesRead);
             }
+        }
+
+        private static bool NoBytesToRead(int bytesRead) {
+            return bytesRead == 0;
         }
 
         /// <summary>

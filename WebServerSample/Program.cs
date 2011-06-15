@@ -32,16 +32,7 @@ namespace MicroFrameworkWebServer
             Directory.SetCurrentDirectory(@"\SD");
             string[] dirs = Directory.GetDirectories(@"\SD");
 
-            foreach (string dir in dirs)
-            {
-                Debug.Print(dir);
-                foreach (string file in Directory.GetFiles(dir))
-                {
-                    Debug.Print(file);
-                }
-            }
-
-
+  
             var listener = new Listener(RequestReceived);
                 listener.Start();
             

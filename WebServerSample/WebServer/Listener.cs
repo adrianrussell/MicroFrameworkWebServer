@@ -1,7 +1,4 @@
 using System;
-#if MF_FRAMEWORK_VERSION_V4_1
-using Microsoft.SPOT;
-#endif
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -51,29 +48,21 @@ namespace MicroFrameworkWebServer.WebServer
             {
                 using (IClientSocket clientSocket = new ClientSocket(ListeningSocket.Accept()))
                 {
-                   
+                    Log.Debug("Received request from " + clientSocket.RemoteEndPoint);
 
-                    IPEndPoint clientIP = clientSocket.RemoteEndPoint;
-                    Log.Debug("Received request from " + clientIP);
+                    Log.Debug(DateTime.Now + " " + clientSocket.Available + " request bytes available");
 
-                    int availableBytes = clientSocket.Available;
-                    Log.Debug(DateTime.Now + " " + availableBytes + " request bytes available");
-
-                    int bytesReceived = (availableBytes > MaxRequestSize ? MaxRequestSize : availableBytes);
+                    int bytesReceived = DetermineBytesReceived(clientSocket.Available);
                     if (bytesReceived > 0)
                     {
                         byte[] buffer = clientSocket.Receive(bytesReceived); // Buffer probably should be larger than this.
-                       
                         
                         using (var r = new Request(clientSocket, Encoding.UTF8.GetChars(buffer)))
                         {
                             r.ProcessRequestHeader();
                             Log.Debug(DateTime.Now + " " + r.URL);
                             if (_requestReceived != null) _requestReceived(r);
-
                         }
-
-
                     }
                 }
 
@@ -83,6 +72,9 @@ namespace MicroFrameworkWebServer.WebServer
 
         }
 
+        private int DetermineBytesReceived(int availableBytes) {
+            return (availableBytes > MaxRequestSize ? MaxRequestSize : availableBytes);
+        }
 
         #region IDisposable Members
 
