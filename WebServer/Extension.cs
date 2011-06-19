@@ -1,6 +1,3 @@
-using System;
-using Microsoft.SPOT;
-
 // This is needed for extension methods to work
 namespace System.Runtime.CompilerServices
 {

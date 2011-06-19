@@ -30,6 +30,8 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="Extension.cs" />
+    <Compile Include="Listener.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Network\ClientSocket.cs" />
     <Compile Include="FileStreamFactory.cs" />
